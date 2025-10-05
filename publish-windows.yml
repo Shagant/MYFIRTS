@@ -1,0 +1,28 @@
+﻿name: Build Windows single-file EXE
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.0.x"
+
+      - name: Restore
+        working-directory: ExcelMerger
+        run: dotnet restore
+
+      - name: Publish
+        working-directory: ExcelMerger
+        run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o ../artifacts
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: excelmerger-win-x64
+          path: artifacts/*
